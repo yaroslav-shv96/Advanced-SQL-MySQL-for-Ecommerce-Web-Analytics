@@ -14,3 +14,11 @@ Use SQL to:
 Access and explore the Maven Fuzzy Factory database
 Become the data expert for the company, and the go-to person for mission critical analyses
 Analyze and optimize the business’ marketing channels, website, and product portfolio
+
+### Overview Database
+We will be working with six related tables, which contain eCommerce data about:
+
+Website Activity
+Products
+Orders and Refunds
+We'll use MySQL to understand how customers access and interact with the site, analyze landing page performance and conversion, and explore product-level sales.
