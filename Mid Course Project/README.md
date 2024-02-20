@@ -239,10 +239,108 @@ AND utm_campaign = 'nonbrand'
 AND website_session_id > 17145
 AND created_at < '2012-11-27';
 
--- 22972 sessions since the test
+-- 22972 website_sessions since the test
 ```
+We can estimate the increase in revenue from the increase in orders :
+22972 session x 1.08% (incremental % of order) = 248
+So, estimated at least 248 incremental orders since 29 Jul using the lander-1 page
+Calculate monthly increase (July - November) :
+248 / 4 = 64 additional order/month
 
+💡7 - I’d like to tell the story of our website performance improvements over the course of the first 8 months. Could you pull session to order conversion rates, by month?
+Step :
 
+Check pageview_url from two pages was created and create summary all pageviews for relevant session
+Categorise website sessions under segment by 'saw_home_page' or 'saw_lander_page' and aggregate data to assess funnel performance
+Convert aggregated result to percentage of click rate
+
+Query :
+```sql
+CREATE TEMPORARY TABLE session_level_made_it_flagged
+SELECT
+website_session_id,
+MAX(homepage) AS saw_homepage,
+MAX(custom_lander) AS saw_custom_lander,
+MAX(products_page) AS product_made_it,
+MAX(mrfuzzy_page) AS mrfuzzy_made_it,
+MAX(cart_page) AS cart_made_it,
+MAX(shipping_page) AS shipping_made_it,
+MAX(billing_page) AS billing_made_it,
+MAX(thank_you_page) AS thank_you_made_it
+FROM(
+SELECT
+website_sessions.website_session_id,
+website_pageviews.pageview_url,
+CASE WHEN pageview_url = '/home' THEN 1 ELSE NULL END AS homepage,
+CASE WHEN pageview_url = '/lander-1' THEN 1 ELSE NULL END AS custom_lander,
+CASE WHEN pageview_url = '/products' THEN 1 ELSE NULL END AS products_page,
+CASE WHEN pageview_url = '/the-original-mr-fuzzy' THEN 1 ELSE NULL END AS mrfuzzy_page,
+CASE WHEN pageview_url = '/cart' THEN 1 ELSE NULL END AS cart_page,
+CASE WHEN pageview_url = '/shipping' THEN 1 ELSE NULL END AS shipping_page,
+CASE WHEN pageview_url = '/billing' THEN 1 ELSE NULL END AS billing_page,
+CASE WHEN pageview_url = '/thank-you-for-your-order' THEN 1 ELSE NULL END AS thank_you_page
+FROM website_sessions
+LEFT JOIN website_pageviews
+ON website_sessions.website_session_id = website_pageviews.website_session_id
+WHERE website_sessions.utm_source = 'gsearch' 
+AND website_sessions.utm_campaign = 'nonbrand'
+AND website_sessions.created_at > '2012-06-19'
+AND website_sessions.created_at < '2012-07-28'
+ORDER BY
+website_sessions.website_session_id,
+website_pageviews.created_at
+) AS pageview_level
+GROUP BY
+website_session_id;CREATE TEMPORARY TABLE session_level1
+SELECT
+website_session_id,
+MAX(product_page) AS product,
+MAX(mrfuzzy_page) AS mrfuzzy,
+MAX(cart_page) AS cart,
+MAX(shipping_page) AS shipping,
+MAX(billing_page) AS billing,
+MAX(thank_you_page) AS thank_you
+FROM(
+SELECT
+website_sessions.website_session_id,
+website_pageviews.pageview_url,
+CASE WHEN pageview_url = '/products' THEN 1 ELSE NULL END AS product_page,
+CASE WHEN pageview_url = '/the-original-mr-fuzzy' THEN 1 ELSE NULL END AS mrfuzzy_page,
+CASE WHEN pageview_url = '/cart' THEN 1 ELSE NULL END AS cart_page,
+CASE WHEN pageview_url = '/shipping' THEN 1 ELSE NULL END AS shipping_page,
+CASE WHEN pageview_url = '/billing' THEN 1 ELSE NULL END AS billing_page,
+CASE WHEN pageview_url = '/thank-you-for-your-order' THEN 1 ELSE NULL END AS thank_you_page
+FROM website_sessions
+LEFT JOIN website_pageviews
+ON website_sessions.website_session_id = website_pageviews.website_session_id
+WHERE website_sessions.utm_source = 'gsearch' 
+AND website_sessions.utm_campaign = 'nonbrand'
+AND website_sessions.created_at > '2012-08-05'
+AND website_sessions.created_at < '2012-09-05'
+ORDER BY
+website_sessions.website_session_id,
+website_pageviews.created_at
+) AS pageview_level
+GROUP BY
+website_session_id;
+
+-- final output
+
+SELECT
+CASE WHEN saw_homepage = 1 THEN 'saw_homepage'
+WHEN saw_custom_lander = 1 THEN 'saw_custom_lander'
+ELSE 'else'
+END AS segment,
+COUNT(DISTINCT website_session_id) AS sessions,
+COUNT(DISTINCT CASE WHEN product_made_it = 1 THEN website_session_id ELSE NULL END) AS to_products,
+COUNT(DISTINCT CASE WHEN mrfuzzy_made_it = 1 THEN website_session_id ELSE NULL END) AS to_mrfuzzy,
+COUNT(DISTINCT CASE WHEN cart_made_it = 1 THEN website_session_id ELSE NULL END) AS to_cart,
+COUNT(DISTINCT CASE WHEN shipping_made_it = 1 THEN website_session_id ELSE NULL END) AS to_shipping,
+COUNT(DISTINCT CASE WHEN billing_made_it = 1 THEN website_session_id ELSE NULL END) AS to_billing,
+COUNT(DISTINCT CASE WHEN thank_you_made_it = 1 THEN website_session_id ELSE NULL END) AS to_thank_you
+FROM session_level_made_it_flagged
+GROUP BY 1;
+```
 
 
 
