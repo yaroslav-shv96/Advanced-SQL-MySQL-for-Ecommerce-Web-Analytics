@@ -165,11 +165,11 @@ GROUP BY 1,2;
 
 **Steps:**
 
-Find lander-1 test was created and the first website_pageview_id, retricting to home and lander-1
-Create summary, join the result with order_id and aggregat for session, order, and cvr
-Find most recent pageview for gsearch nonbrand where traffic was sent to /home and estimate revenue that test earned from lander-1
++ Find lander-1 test was created and the first website_pageview_id, retricting to home and lander-1
++ Create summary, join the result with order_id and aggregat for session, order, and cvr
++ Find most recent pageview for gsearch nonbrand where traffic was sent to /home and estimate revenue that test earned from lander-1
 
-Query :
+**Query:**
 ```sql
 SELECT
 MIN(website_pageview_id) AS first_test_pv
@@ -253,20 +253,16 @@ AND created_at < '2012-11-27';
 
 -- 22972 website_sessions since the test
 ```
-We can estimate the increase in revenue from the increase in orders :
-22972 session x 1.08% (incremental % of order) = 248
-So, estimated at least 248 incremental orders since 29 Jul using the lander-1 page
-Calculate monthly increase (July - November) :
-248 / 4 = 64 additional order/month
+*We can estimate the increase in revenue from the increase in orders: 22972 session x 0.0087 (incremental % of order) = 200. So, estimated at least 200 incremental orders since 29 Jul using the lander-1 page. Calculate monthly increase (July - November): 200 / 4 = 50 additional order/month.*
 
-💡7 - I’d like to tell the story of our website performance improvements over the course of the first 8 months. Could you pull session to order conversion rates, by month?
-Step :
+:round_pushpin: **For the landing page test you analyzed previously, it would be great to show a full conversion funnel from each of the two pages to orders. You can use the same time period you analyzed last time (Jun 19 Jul 28).**
 
-Check pageview_url from two pages was created and create summary all pageviews for relevant session
-Categorise website sessions under segment by 'saw_home_page' or 'saw_lander_page' and aggregate data to assess funnel performance
-Convert aggregated result to percentage of click rate
+**Steps:**
 
-Query :
++ Check pageview_url from two pages was created and create summary all pageviews for relevant session
++ Categorise website sessions under segment by 'saw_home_page' or 'saw_custom_lander' and aggregate data to assess funnel performance
+
+**Query:**
 ```sql
 CREATE TEMPORARY TABLE session_level_made_it_flagged
 SELECT
@@ -356,17 +352,19 @@ FROM session_level_made_it_flagged
 GROUP BY 1;
 ```
 
-#Result:
+**Result:**
 
 <img width="456" alt="6" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/457c403c-6519-4685-8c6f-083acecc44b8">
 
-💡8 - I’d love for you to quantify the impact of our billing test, as well. Please analyze the lift generated from the test (Sep 10 – Nov 10), in terms of revenue per billing page session, and then pull the number of billing page sessions for the past month to understand monthly impact.
-Step :
+:round_pushpin: **I’d love for you to quantify the impact of our billing test, as well. Please analyze the lift generated from the test (Sep 10 – Nov 10), in terms of revenue per billing page session, and then pull the number of billing page sessions for the past month to understand monthly impact.**
 
-Check billing-2 test was created
-Calculate or aggregate the sessions and price_usd for /billing and /billing-2
-Calculate billing page sessions for the past month (Sep 27 – Nov 27) and estimate revenue
+**Steps:**
 
++ Check billing-2 test was created
++ Calculate or aggregate the sessions and price_usd for /billing and /billing-2
++ Calculate billing page sessions for the past month (Sep 27 – Nov 27) and estimate revenue
+
+**Query:**
 ```sql
 SELECT 
 billing_version_seen,
@@ -387,11 +385,11 @@ AND website_pageviews.pageview_url IN ('/billing', '/billing-2')
 ) AS billing_pageviews_and_order_data
 GROUP BY 1;
 ```
-Result :
+**Result:**
 
 <img width="274" alt="7" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/cb6dc808-335f-4f2a-81ba-9d24951702b5">
 
-8 — billing-2 has a larger revenue per billing page contribution with a lift of 8.51 dollars/pageview
+*/billing-2 has a larger revenue per billing page contribution with a lift of 8.51 dollars/pageview*
 
 
 
