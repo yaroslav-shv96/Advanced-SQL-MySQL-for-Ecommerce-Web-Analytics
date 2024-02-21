@@ -1,23 +1,26 @@
 # MID COURSE PROJECT
-:paperclip: ## The Situation
+:paperclip: **The Situation**
+
 Maven Fuzzy Factory has been live for ~8 months, and your CEO is due to present company performance metrics to the board next week. You’ll be the one tasked with preparing relevant metrics to show the company’s promising growth.
 
-:paperclip: ### The Objective
-Use SQL to :
+:paperclip: **The Objective**
+
+**Use SQL to:**
+
 Extract and analyze website traffic and performance data from the Maven Fuzzy Factory database to quantify the company’s growth, and to tell the story of how you have been able to generate that growth.
 
-Tell the story of your company’s growth, using trended performance data
-Use the database to explain some of the details around your growth story, and quantify the revenue impact of some of your wins
-Analyze current performance, and use that data available to assess upcoming opportunities
++ Tell the story of your company’s growth, using trended performance data
++ Use the database to explain some of the details around your growth story, and quantify the revenue impact of some of your wins
++ Analyze current performance, and use that data available to assess upcoming opportunities
 
-:paperclip: ### QUESTION
-1. - Gsearch seems to be the biggest driver of our business. Could you pull monthly trends for gsearch sessions and orders so that we can showcase the growth there?
+## QUESTION
+:round_pushpin: **Gsearch seems to be the biggest driver of our business. Could you pull monthly trends for gsearch sessions and orders so that we can showcase the growth there?**
 
-Steps :
+**Steps:**
 
-Extract month from date, calculate relavant sessions and orders based source is gsearch
-Aggregate to find conversion rate for every month sessions
-Query:
++ Extract year and month from date, calculate relavant sessions and orders based source is gsearch
+
+**Query:**
 ```sql
 SELECT 
 YEAR(website_sessions.created_at) AS yr,
@@ -32,20 +35,21 @@ AND website_sessions.utm_source = 'gsearch'
 GROUP BY 1,2;
 ```
 
-Result :
+**Result:**
 
 <img width="161" alt="1" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/0d426e49-8c0a-40cf-9764-55c9a79ca487">
 
-Session to orders growth remained stable and saw a steadily increase from March, 3.23% to November, 4.20%.
 
-2. - Next, it would be great to see a similar monthly trend for Gsearch, but this time splitting out nonbrand and brand campaigns separately. I am wondering if brand is picking up at all. If so, this is a good story to tell.
+*Session and orders growth remained stable and saw a steadily increase.* 
 
-Steps :
+:round_pushpin: **Next, it would be great to see a similar monthly trend for Gsearch, but this time splitting out nonbrand and brand campaigns separately. I am wondering if brand is picking up at all. If so, this is a good story to tell.**
 
-Extract month from date, calculate relavant sessions and orders based on source is gsearch
-Aggregate to find conversion rate for every month based on campaign
+**Steps:**
 
-Query :
++ Extract year and month from date, calculate relavant sessions and orders based on source is gsearch
++ Splitting out nonbrand and brand campaigns separately
+
+**Query:**
 ```sql
 SELECT 
 YEAR(website_sessions.created_at) AS yr,
@@ -61,19 +65,20 @@ WHERE website_sessions.created_at < '2012-11-27'
 AND website_sessions.utm_source = 'gsearch'
 GROUP BY 1,2;
 ```
-Result:
+**Result:**
 
+<img width="366" alt="2" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/dcc29225-10d2-4803-a474-ff93a7f96614">
 
-We can see that the percentage of conversion rate of nonbrand campaign steadily grows from 3% to 4%. But, the brand campaign has fluctuating conversion rates/trends every month.
+*Session and orders growth remained stable and saw a steadily increase.*
 
-3.
-- While we’re on Gsearch, could you dive into nonbrand, and pull monthly sessions and orders split by device type? I want to flex our analytical muscles a little and show the board we really know our traffic sources.
-Steps :
+:round_pushpin: **While we’re on Gsearch, could you dive into nonbrand, and pull monthly sessions and orders split by device type? I want to flex our analytical muscles a little and show the board we really know our traffic sources.**
 
-Extract month from date, calculate relavant sessions and orders based on source is gsearch
-Aggregate to find nonbrand conversion rate for every month based on device type
+**Steps:**
 
-Query :
++ Extract year and month from date, calculate relavant sessions and orders based on source is gsearch and campaign is nonbrand
++ Pull monthly sessions and orders split by device type
+
+**Query:**
 ```sql
 SELECT 
 YEAR(website_sessions.created_at) AS yr,
@@ -81,7 +86,7 @@ MONTH(website_sessions.created_at) AS mo,
 COUNT(DISTINCT CASE WHEN device_type = 'desktop' THEN website_sessions.website_session_id ELSE NULL END) AS desktop_sessions,
 COUNT(DISTINCT CASE WHEN device_type = 'desktop' THEN orders.order_id ELSE NULL END) AS desktop_orders,
 COUNT(DISTINCT CASE WHEN device_type = 'mobile' THEN website_sessions.website_session_id ELSE NULL END) AS mobile_sessions,
-COUNT(DISTINCT CASE WHEN device_type = 'mobile' THEN orders.order_id ELSE NULL END) AS desktop_orders
+COUNT(DISTINCT CASE WHEN device_type = 'mobile' THEN orders.order_id ELSE NULL END) AS mobile_orders
 FROM website_sessions
 LEFT JOIN orders
 ON orders.website_session_id = website_sessions.website_session_id
@@ -91,18 +96,20 @@ AND website_sessions.utm_campaign = 'nonbrand'
 GROUP BY 1,2;
 ```
 
-Result:
-<img width="364" alt="3" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/462c2d51-154b-4eef-bfd8-554efec84d25">
+**Result:**
 
-The majority of the conversion rate contribution came from desktop users with a good growth from 4.43% in March, it dropped in April to 3.51%, but continued to increase in the following months to reach 5% in November. The contribution with mobile devices is quite low and there is a need to investigate this, it could be that the web accessed through mobile is not user friendly.
+<img width="359" alt="3" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/93039e3c-7885-41e5-8161-41c2bd074f40">
 
-💡4 - I’m worried that one of our more pessimistic board members may be concerned about the large % of traffic from Gsearch. Can you pull monthly trends for Gsearch, alongside monthly trends for each of our other channels?
-Step :
+*The majority  contribution came from desktop users with a good growth. The contribution with mobile devices is quite low and there is a need to investigate this, it could be that the web accessed through mobile is not user friendly.*
 
-Find the various utm sources and refers to see the traffic we're getting
-Extract months and aggregate to find each session based on the last output condition
+:round_pushpin: **I’m worried that one of our more pessimistic board members may be concerned about the large % of traffic from Gsearch. Can you pull monthly trends for Gsearch, alongside monthly trends for each of our other channels?**
 
-Query :
+**Steps:**
+
++ Find the various utm sources and refers to see the traffic we're getting
++ Extract months and aggregate to find each session based on the last output condition
+
+**Query:**
 
 ```sql
 SELECT 
@@ -119,18 +126,21 @@ WHERE website_sessions.created_at < '2012-11-27'
 GROUP BY 1,2;
 ```
 
-Result:
+**Result:**
+
 <img width="472" alt="4" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/4e451e57-231c-494c-8bdb-31d2da447823">
 
-Gsearh is the dominant traffic among other channels. Not only gsearch, each channel also experiences session growth every month.
 
-💡5 - I’d like to tell the story of our website performance improvements over the course of the first 8 months. Could you pull session to order conversion rates, by month?
-Step :
+*Gsearh is the dominant traffic among other channels. Not only gsearch, each channel also experiences session growth every month.*
 
-Extract month from date, calculate relavant sessions and orders
-Aggregate to find conversion rate for every month sessions
+:round_pushpin: **I’d like to tell the story of our website performance improvements over the course of the first 8 months. Could you pull session to order conversion rates, by month?**
 
-Query :
+**Steps:**
+
++ Extract month from date, calculate relavant sessions and orders
++ Aggregate to find conversion rate for every month sessions
+
+**Query:**
 ```sql
 SELECT 
 YEAR(website_sessions.created_at) AS yr,
@@ -145,13 +155,15 @@ WHERE website_sessions.created_at < '2012-11-27'
 GROUP BY 1,2;
 ```
 
-Result:
+**Result:**
+
 <img width="220" alt="5" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/fcda44a0-f897-4928-990b-0161b3b37688">
 
-The conversion rate in March was 3.19% and decreased in the next month. The conversion rate started to increase steadily in the following month until it reached 4.40% in November.
+*The conversion rate in March was 3.19% and decreased in the next month. The conversion rate started to increase steadily in the following month until it reached 4.40% in November.*
 
-💡6 - For the gsearch lander test, please estimate the revenue that test earned us (Hint: Look at the increase in CVR from the test (Jun 19 – Jul 28), and use nonbrand sessions and revenue since then to calculate incremental value)
-Step :
+:round_pushpin: **For the gsearch lander test, please estimate the revenue that test earned us (Hint: Look at the increase in CVR from the test (Jun 19 – Jul 28), and use nonbrand sessions and revenue since then to calculate incremental value)**
+
+**Steps:**
 
 Find lander-1 test was created and the first website_pageview_id, retricting to home and lander-1
 Create summary, join the result with order_id and aggregat for session, order, and cvr
@@ -291,7 +303,9 @@ website_sessions.website_session_id,
 website_pageviews.created_at
 ) AS pageview_level
 GROUP BY
-website_session_id;CREATE TEMPORARY TABLE session_level1
+website_session_id;
+
+CREATE TEMPORARY TABLE session_level1
 SELECT
 website_session_id,
 MAX(product_page) AS product,
@@ -341,6 +355,45 @@ COUNT(DISTINCT CASE WHEN thank_you_made_it = 1 THEN website_session_id ELSE NULL
 FROM session_level_made_it_flagged
 GROUP BY 1;
 ```
+
+#Result:
+
+<img width="456" alt="6" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/457c403c-6519-4685-8c6f-083acecc44b8">
+
+💡8 - I’d love for you to quantify the impact of our billing test, as well. Please analyze the lift generated from the test (Sep 10 – Nov 10), in terms of revenue per billing page session, and then pull the number of billing page sessions for the past month to understand monthly impact.
+Step :
+
+Check billing-2 test was created
+Calculate or aggregate the sessions and price_usd for /billing and /billing-2
+Calculate billing page sessions for the past month (Sep 27 – Nov 27) and estimate revenue
+
+```sql
+SELECT 
+billing_version_seen,
+COUNT(DISTINCT website_session_id) AS sessions,
+SUM(price_usd)/COUNT(DISTINCT website_session_id) AS revenue_per_billing_page_seen
+FROM(
+SELECT
+website_pageviews.website_session_id,
+website_pageviews.pageview_url AS billing_version_seen,
+orders.order_id,
+orders.price_usd
+FROM website_pageviews
+LEFT JOIN orders
+ON orders.website_session_id = website_pageviews.website_session_id
+WHERE website_pageviews.created_at > '2012-09-10'
+AND website_pageviews.created_at < '2012-11-10'
+AND website_pageviews.pageview_url IN ('/billing', '/billing-2')
+) AS billing_pageviews_and_order_data
+GROUP BY 1;
+```
+Result :
+
+<img width="274" alt="7" src="https://github.com/yaroslav-shv96/Advanced-SQL-MySQL-for-Ecommerce-Web-Analytics/assets/159712709/cb6dc808-335f-4f2a-81ba-9d24951702b5">
+
+8 — billing-2 has a larger revenue per billing page contribution with a lift of 8.51 dollars/pageview
+
+
 
 
 
